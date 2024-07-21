@@ -1,30 +1,49 @@
-const express = require('express');
+import express, { Request, Response } from 'express';
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-let board = [];
-let neighborCounts = [];
-let size = 10;
+let board: boolean[][] = [];
+let neighborCounts: number[][] = [];
+let size: number = 10;
 
-const directions = [
-  [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]
+const directions: [number, number][] = [
+  [0, 1], [1, 0], [0, -1], [-1, 0],
+  [1, 1], [1, -1], [-1, 1], [-1, -1]
 ];
 
-const initializeBoard = (req, res) => {
+const initializeBoard = (req: Request, res: Response): void => {
   size = req.body.size || 10;
-  board = Array(size).fill(null).map(() => Array(size).fill(false));
+  board = Array(size).fill(null).map(() =>
+    Array(size).fill(null).map(() => Math.random() < 0.5)
+  );
   neighborCounts = Array(size).fill(null).map(() => Array(size).fill(0));
+
+  // Initialize neighbor counts based on the random board
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      if (board[row][col]) {
+        for (const [dx, dy] of directions) {
+          const newRow = row + dx;
+          const newCol = col + dy;
+          if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
+            neighborCounts[newRow][newCol] += 1;
+          }
+        }
+      }
+    }
+  }
+
+  res.json({ board, neighborCounts });
+};
+
+const retrieveBoardState = (req: Request, res: Response): void => {
   res.json({ board });
 };
 
-const retrieveBoardState = (req, res) => {
-  res.json({ board });
-};
-
-const evolveBoardLogic = () => {
-  let changes = [];
+const evolveBoardLogic = (): void => {
+  let changes: [number, number, boolean][] = [];
 
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
@@ -42,7 +61,7 @@ const evolveBoardLogic = () => {
   }
 };
 
-const updateCellState = (row, col, newState) => {
+const updateCellState = (row: number, col: number, newState: boolean): void => {
   const currentState = board[row][col];
   if (currentState !== newState) {
     board[row][col] = newState;
@@ -60,7 +79,7 @@ const updateCellState = (row, col, newState) => {
 
 app.post('/api/initialize', initializeBoard);
 app.get('/api/board', retrieveBoardState);
-app.post('/api/evolve', (req, res) => {
+app.post('/api/evolve', (req: Request, res: Response) => {
   evolveBoardLogic();
   res.json({ board });
 });
