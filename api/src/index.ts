@@ -4,8 +4,12 @@ const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-let board: boolean[][] = [];
-let neighborCounts: number[][] = [];
+type Cell = {
+  isAlive: boolean;
+  liveNeighbors: number;
+};
+
+let board: Cell[][] = [];
 let size: number = 10;
 
 const directions: [number, number][] = [
@@ -16,26 +20,28 @@ const directions: [number, number][] = [
 const initializeBoard = (req: Request, res: Response): void => {
   size = req.body.size || 10;
   board = Array(size).fill(null).map(() =>
-    Array(size).fill(null).map(() => Math.random() < 0.5)
+    Array(size).fill(null).map(() => ({
+      isAlive: Math.random() < 0.5,
+      liveNeighbors: 0
+    }))
   );
-  neighborCounts = Array(size).fill(null).map(() => Array(size).fill(0));
 
   // Initialize neighbor counts based on the random board
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
-      if (board[row][col]) {
+      if (board[row][col].isAlive) {
         for (const [dx, dy] of directions) {
           const newRow = row + dx;
           const newCol = col + dy;
           if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
-            neighborCounts[newRow][newCol] += 1;
+            board[newRow][newCol].liveNeighbors += 1;
           }
         }
       }
     }
   }
 
-  res.json({ board, neighborCounts });
+  res.json({ board });
 };
 
 const retrieveBoardState = (req: Request, res: Response): void => {
@@ -43,35 +49,35 @@ const retrieveBoardState = (req: Request, res: Response): void => {
 };
 
 const evolveBoardLogic = (): void => {
-  let changes: [number, number, boolean][] = [];
+  let changes: { row: number; col: number; newState: boolean }[] = [];
 
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
-      const liveNeighbors = neighborCounts[row][col];
-      if (board[row][col] && (liveNeighbors < 2 || liveNeighbors > 3)) {
-        changes.push([row, col, false]);
-      } else if (!board[row][col] && liveNeighbors === 3) {
-        changes.push([row, col, true]);
+      const cell = board[row][col];
+      if (cell.isAlive && (cell.liveNeighbors < 2 || cell.liveNeighbors > 3)) {
+        changes.push({ row, col, newState: false });
+      } else if (!cell.isAlive && cell.liveNeighbors === 3) {
+        changes.push({ row, col, newState: true });
       }
     }
   }
 
-  for (const [row, col, newState] of changes) {
+  for (const { row, col, newState } of changes) {
     updateCellState(row, col, newState);
   }
 };
 
 const updateCellState = (row: number, col: number, newState: boolean): void => {
-  const currentState = board[row][col];
-  if (currentState !== newState) {
-    board[row][col] = newState;
+  const cell = board[row][col];
+  if (cell.isAlive !== newState) {
     const increment = newState ? 1 : -1;
+    cell.isAlive = newState;
 
     for (const [dx, dy] of directions) {
       const newRow = row + dx;
       const newCol = col + dy;
       if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
-        neighborCounts[newRow][newCol] += increment;
+        board[newRow][newCol].liveNeighbors += increment;
       }
     }
   }
