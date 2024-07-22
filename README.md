@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Conway&#39;s Game of Life
 
-## Getting Started
+## Description
+This project implements Conway's Game of Life using Next.js, TypeScript, and Tailwind CSS. The game includes features for evolving the board, navigating between states, and setting the board size.
 
-First, run the development server:
+
+## Installation
 
 ```bash
+# Clone the project
+git clone https://github.com/prradd/finonex-gol.git
+# Install dependencies
+npm install
+# Run the project
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Docker is also supported. To build the Docker image, run the following commands:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run docker:build
+# then
+npm run docker:run
+# to close the containers
+npm run docker:stop
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Project Structure
 
-## Learn More
+```bash
+/project-root
+  /src
+    /app
+      page.tsx
+    /components
+      Cell.tsx
+      GameBoard.tsx
+    GameContext.tsx
+  package.json
+  tsconfig.json
+  Dockerfile
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Requirements
+- **Node.js** v20.0.0 or higher
+- **npm** v10.7.0 or higher
+- **Docker** (optional)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
+This project is licensed under the MIT License.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
