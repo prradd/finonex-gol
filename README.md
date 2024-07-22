@@ -20,9 +20,9 @@ Docker is also supported. To build the Docker image, run the following commands:
 ```bash
 npm run docker:build
 # then
-npm run docker:run
+npm run docker:up
 # to close the containers
-npm run docker:stop
+npm run docker:down
 ```
 
 ## Project Structure
