@@ -8,8 +8,8 @@ interface Cell {
 interface GameContextType {
   board: Cell[][];
   evolveBoard: () => void;
-  previousBoard: () => void;
-  nextBoard: () => void;
+  goToPrevBoard: () => void;
+  goToNextBoard: () => void;
   size: number;
   setSize: (size: number) => void;
   initializeBoard: () => void;
@@ -101,14 +101,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setCurrentStep(history.length);
   };
 
-  const previousBoard = () => {
+  const goToPrevBoard = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
       setBoard(history[currentStep - 1]);
     }
   };
 
-  const nextBoard = () => {
+  const goToNextBoard = () => {
     if (currentStep < history.length - 1) {
       setCurrentStep(currentStep + 1);
       setBoard(history[currentStep + 1]);
@@ -123,7 +123,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const canGoForward = currentStep < history.length - 1;
 
   return (
-    <GameContext.Provider value={{ board, evolveBoard, previousBoard, nextBoard, size, setSize, initializeBoard, currentStep, canGoBack, canGoForward }}>
+    <GameContext.Provider value={{ board, evolveBoard, goToPrevBoard, goToNextBoard, size, setSize, initializeBoard, currentStep, canGoBack, canGoForward }}>
       {children}
     </GameContext.Provider>
   );

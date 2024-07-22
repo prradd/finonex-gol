@@ -35,11 +35,11 @@ const EvolveButton = () => {
 };
 
 const PreviousButton = () => {
-  const { previousBoard, canGoBack } = useGame();
+  const { goToPrevBoard, canGoBack } = useGame();
 
   return (
     <button
-      onClick={previousBoard}
+      onClick={goToPrevBoard}
       disabled={!canGoBack}
       className={`px-6 py-2 w-24 rounded shadow-lg transition duration-300 ${canGoBack ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-gray-400 text-gray-700'}`}
     >
@@ -49,11 +49,11 @@ const PreviousButton = () => {
 };
 
 const NextButton = () => {
-  const { nextBoard, canGoForward } = useGame();
+  const { goToNextBoard, canGoForward } = useGame();
 
   return (
     <button
-      onClick={nextBoard}
+      onClick={goToNextBoard}
       disabled={!canGoForward}
       className={`px-6 py-2 w-24 rounded shadow-lg transition duration-300 ${canGoForward ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-gray-400 text-gray-700'}`}
     >
